@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  # =====================================================================
+  # 1. DATABASE COMPONENT (MySQL Service Instance)
+  # =====================================================================
+  mysqldb:
+    image: mysql:8.0
+    container_name: api-portal-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: api_portal_db
+      MYSQL_USER: api_user
+      MYSQL_PASSWORD: api_password
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 10s
+      retries: 5
+      start_period: 15s
+
+  # =====================================================================
+  # 2. APPLICATION COMPONENT (Spring Boot REST Gateway Engine)
+  # =====================================================================
+  api-gateway-app:
+    build: .
+    container_name: api-portal-app
+    restart: always
+    ports:
+      - "8081:8000"
+    environment:
+      # These variables override the fallback values in your application.properties file
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/api_portal_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: api_user
+      SPRING_DATASOURCE_PASSWORD: api_password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: "true"
+      JWT_SECRET_KEY: TGzOMc4oDiZVutd0b9d3yjofhUb2gxlJcbhzH32dsxDRZbYHF5AqIjdgIiDSNhdSnCAQwVba9HBBYfggHHaRy2
+    depends_on:
+      mysqldb:
+        condition: service_healthy # Instructs application to pause launch until DB ping passes successfully
+
+# =====================================================================
+# DATA VOLUMES (Prevents loss of database rows when containers exit)
+# =====================================================================
+volumes:
+  mysql_data:
