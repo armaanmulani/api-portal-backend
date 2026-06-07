@@ -47,3 +47,27 @@ Ensure you have the following installed on your machine:
    ```bash
    git clone [https://github.com/armaan941/api-portal-backend.git](https://github.com/armaan941/api-portal-backend.git)
    cd api-portal-backend
+2. **Verify Application Properties Configuration:**
+   Ensure your local src/main/resources/application.properties file is configured to dynamically read environmental variables passed down by the Docker Compose engine:
+   ```bash
+   spring.datasource.url=${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/api_portal_db}
+   spring.datasource.username=${SPRING_DATASOURCE_USERNAME:root}
+   spring.datasource.password=${SPRING_DATASOURCE_PASSWORD:your_local_password}
+3. **Launch the Containerized Infrastructure:**
+   Run the following terminal command from the project root directory (where `docker-compose.yml` resides):
+   ```bash
+   docker compose up --build -d
+   ```
+   This command compiles your Spring Boot source code inside a multi-stage Maven builder image, fetches a stable MySQL 8 container instance, provisions an isolated virtual bridge network, maps database volumes,      and launches both services seamlessly in detached background mode.
+4. **Verify Container Health Status:**
+   ```bash
+   docker compose ps
+   ```
+   You should see two healthy containers actively executing:
+   * `api-portal-app` listening on host port `8000`
+   * `api-portal-db` routed safely to host port `3307` (configured to completely bypass local machine 3306 socket resource collisions)
+
+5. **Tear Down / Stop Infrastructure:**
+   To gracefully shut down the runtime containers while maintaining your database records safely intact inside the virtual storage volume, run:
+   ```bash
+   docker compose down
