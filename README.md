@@ -45,7 +45,7 @@ Ensure you have the following installed on your machine:
 ### Deployment Steps
 1. **Clone the Repository:**
    ```bash
-   git clone [https://github.com/armaan941/api-portal-backend.git](https://github.com/armaan941/api-portal-backend.git)
+   git clone https://github.com/armaan941/api-portal-backend.git
    cd api-portal-backend
 2. **Verify Application Properties Configuration:**
    Ensure your local src/main/resources/application.properties file is configured to dynamically read environmental variables passed down by the Docker Compose engine:
@@ -71,3 +71,32 @@ Ensure you have the following installed on your machine:
    To gracefully shut down the runtime containers while maintaining your database records safely intact inside the virtual storage volume, run:
    ```bash
    docker compose down
+
+---
+
+## 📝 Integrated API Testing Guide (Postman Verification)
+
+### Endpoints Map
+* **Registration:** `POST` `http://localhost:8000/api/v1/auth/register`
+* **Authentication:** `POST` `http://localhost:8000/api/v1/auth/login`
+* **Token Rotation:** `POST` `http://localhost:8000/api/v1/auth/refresh-token`
+* **Protected Free Resource:** `GET` `http://localhost:8000/api/v1/dashboard/free-data`
+* * **Protected Premium Resource:** `GET` `http://localhost:8000/api/v1/dashboard/premium-data`
+* * **Session Revocation:** `POST` `http://localhost:8000/api/v1/auth/logout`
+
+### Execution Verification Flow
+1. Fire up your Postman Client.
+2. Target the registration route with a raw JSON request body payload to generate a brand-new database profile entry.
+3. Submit a `POST` request to the `/login` endpoint. Copy the generated `accessToken` returned from the success payload response.
+4. Access the protected dashboard route, navigate to the Authorization Tab, set the type to Bearer Token, and paste your string key. Click Send to see a clean HTTP `200 OK` return.
+5. Testing the Rate Limiter Interceptor: Click the send button rapidly 11 times inside 60 seconds. On the 11th click, the Bucket4j rate-limiting handler interceptor will drop the request thread immediately, short-circuiting execution to return a structured JSON HTTP `429 Too Many Requests` error mapping payload block!
+
+---
+
+### **Commit and Push to GitHub**
+To instantly push this completely comprehensive readme update to your profile, execute these final terminal steps:
+
+```bash
+git add README.md
+git commit -m "Docs: Complete overhaul of README layout adding architecture breakdowns, run guides, and troubleshooting data"
+git push origin main
