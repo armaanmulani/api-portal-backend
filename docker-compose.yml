@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   # =====================================================================
-  # 1. DATABASE COMPONENT (MySQL Service Instance)
+  # 1. LOCAL DATABASE COMPONENT (Used ONLY on your laptop)
   # =====================================================================
   mysqldb:
     image: mysql:8.0
@@ -24,7 +24,7 @@ services:
       start_period: 15s
 
   # =====================================================================
-  # 2. APPLICATION COMPONENT (Spring Boot REST Gateway Engine)
+  # 2. LOCAL APPLICATION COMPONENT (Used ONLY on your laptop)
   # =====================================================================
   api-gateway-app:
     build: .
@@ -33,19 +33,19 @@ services:
     ports:
       - "8081:8000"
     environment:
-      # These variables override the fallback values in your application.properties file
+      # Local development fallback parameters (Overridden dynamically in Vercel dashboard)
       SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/api_portal_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: api_user
       SPRING_DATASOURCE_PASSWORD: api_password
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_JPA_SHOW_SQL: "true"
-      JWT_SECRET_KEY: TGzOMc4oDiZVutd0b9d3yjofhUb2gxlJcbhzH32dsxDRZbYHF5AqIjdgIiDSNhdSnCAQwVba9HBBYfggHHaRy2
+      JWT_SECRET_KEY: 3d9f7b16c8a4e2d5f0b3c6e9a8f5d2c1b4a7e0f3d6c9b2a5e8f1d4c7b0a3e6f9
     depends_on:
       mysqldb:
-        condition: service_healthy # Instructs application to pause launch until DB ping passes successfully
+        condition: service_healthy
 
 # =====================================================================
-# DATA VOLUMES (Prevents loss of database rows when containers exit)
+# DATA VOLUMES
 # =====================================================================
 volumes:
   mysql_data:
