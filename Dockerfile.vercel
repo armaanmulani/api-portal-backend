@@ -20,8 +20,5 @@ WORKDIR /app
 # Safely extract the compiled executable .jar file from the build layer stage
 COPY --from=build /app/target/*.jar app.jar
 
-# Expose port 8000 to cleanly route pipeline traffic matching our server port config
-EXPOSE 8000
-
 # Execute the application binary with production configuration parameters
 ENTRYPOINT ["java", "-jar", "app.jar"]
