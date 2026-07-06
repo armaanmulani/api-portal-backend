@@ -1,102 +1,406 @@
-# Enterprise API Portal Backend Gateway
+# API Portal Backend Gateway
 
-A high-performance, fully containerized security and traffic management backend engine built with **Spring Boot 3** and **Spring Security 6**. This architecture handles a robust stateless gateway pipeline featuring dynamic role-based rate-limiting, secure dual-token session tracking, database-backed token blacklisting for immediate session revocation, and a centralized global exception interceptor pipeline.
+<p align="center">
 
----
+A secure, production-ready REST API built with Spring Boot that provides JWT-based authentication, role-based authorization, and tier-based access control for Free and Premium users.
 
-## 🚀 Core Architectural Features
+</p>
+<p align="center">
 
-### 1. Robust Security Filter Chain & Session Tracking
-* **Stateless JWT Authentication:** Utilizes an optimized JSON Web Token engine that extracts, validates, and serializes user roles (`FREE` vs `PRO`) directly into short-lived access tokens to protect core downstream dashboard routes.
-* **Dual-Token Lifecycle Architecture:** Integrates database-backed, long-lived `UUID` refresh tokens with automated rotation and transactional cleanup to handle seamless, silent session extensions without password prompts.
-* **Server-Side Token Blacklisting (True Logout):** Eliminates standard stateless JWT vulnerabilities by computing token Time-To-Live (TTL) on logout actions, caching signatures inside a database block list to reject subsequent hijacked requests instantly.
+![Java](https://img.shields.io/badge/Java-21-orange?style=for-the-badge)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.x-6DB33F?style=for-the-badge)
+![Spring Security](https://img.shields.io/badge/Spring_Security-Enabled-success?style=for-the-badge)
+![JWT](https://img.shields.io/badge/JWT-Authentication-blue?style=for-the-badge)
+![JPA](https://img.shields.io/badge/JPA-Hibernate-yellow?style=for-the-badge)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-blue?style=for-the-badge)
+![Maven](https://img.shields.io/badge/Maven-Build-red?style=for-the-badge)
+![REST API](https://img.shields.io/badge/API-REST-success?style=for-the-badge)
 
-### 2. High-Performance Traffic Control (Rate-Limiting)
-* **Bucket4j Token Bucket Implementation:** Decoupled completely from core servlet configurations using a high-performance **Spring MVC HandlerInterceptor** running immediately after identity finalization.
-* **Dynamic Tier Throttling:** Programmatically allocates individual, thread-safe virtual token buckets mapped to active user context identities:
-  * **FREE Tier:** Strictly capped at `10 requests / minute` with instant `429 Too Many Requests` mitigation drop-offs.
-  * **PRO Tier:** Accelerated to `100 requests / minute` with an absolute auto-refill interval strategy.
+</p>
 
-### 3. Defensive Programming & Global Interception
-* **Centralized Exception Catchment:** Engineered using a unified `@RestControllerAdvice` to trap multi-threaded security faults (`AccessDeniedException`, custom token failures) before internal servlet forward leak routes can occur.
-* **Unified API Response Layouts:** Formats all application errors into predictable, structured JSON objects containing exact HTTP statuses, human-readable feedback, and precise request tracking identifiers.
+## Live API
 
----
+The backend is deployed and publicly accessible, allowing authenticated users to interact with the REST API without requiring a local setup.
 
-## 🛠️ Technology Stack
-* **Framework:** Spring Boot 3.x, Spring Security 6.x, Spring Data JPA
-* **Database Engine:** MySQL 8.0 
-* **Traffic Control Core:** Bucket4j (Token-Bucket Algorithm)
-* **Token Handling:** JJWT (Java JWT Library)
-* **Build & Dependency Automation:** Maven 3+
-* **Containerization Engine:** Docker & Docker Compose
+### Production URL
 
----
+https://api-portal-production-123.up.railway.app/
 
-## 🐋 Containerized Local Deployment (Docker Architecture)
+### Swagger UI
 
-The entire application ecosystem—including the compiled Java 21 Spring Boot web container and a pre-configured, isolated MySQL instance—can be deployed on any machine with **one single command** via Docker Compose.
+https://api-portal-production-123.up.railway.app/swagger-ui/index.html/
+
+## About the Project
+
+API Portal Backend is a secure RESTful backend application developed using **Spring Boot** to demonstrate modern authentication and authorization practices in enterprise Java applications.
+
+The system enables users to create an account, authenticate securely, and access protected API resources using **JWT (JSON Web Tokens)**. Every authenticated request is validated through Spring Security, ensuring that only verified users can access secured endpoints.
+
+To demonstrate real-world access control, the application implements a **tier-based authorization model** with **Free** and **Premium** user roles. Premium endpoints are protected using role-based authorization, preventing Free users from accessing restricted resources while allowing Premium users full access to exclusive content.
+
+The project follows a layered architecture with Controllers, Services, and Repositories, uses **Spring Data JPA** for database interaction, and stores passwords securely using **BCrypt encryption**. Designed with scalability and maintainability in mind, it showcases industry-standard backend development practices for building secure REST APIs.
+
+## Project Goals
+
+This project was built to explore and implement secure backend development practices using the Spring ecosystem. The primary objectives include:
+
+- Building a stateless authentication system using JWT.
+- Implementing secure user registration and login.
+- Enforcing role-based authorization with Spring Security.
+- Restricting premium resources to authorized users.
+- Following clean architecture principles for maintainable backend development.
+- Providing a deployable REST API that can be consumed by frontend applications or API clients.
+
+## Features
+
+- Secure user registration and login.
+- JWT-based stateless authentication.
+- Role-based authorization using Spring Security.
+- Tier-based access control for Free and Premium users.
+- Automatic restriction of premium-only endpoints.
+- BCrypt password hashing before database storage.
+- RESTful API design following industry standards.
+- Database persistence using Spring Data JPA and Hibernate.
+- Centralized exception handling for consistent error responses.
+- Layered architecture (Controller → Service → Repository).
+- Deployed backend accessible via a public URL.
+
+## Project Highlights
+
+| Category | Implementation |
+|----------|----------------|
+| **Authentication** | Secure user registration and login using JWT (JSON Web Tokens) |
+| **Authorization** | Role-Based Access Control (RBAC) with Spring Security |
+| **User Tiers** | Supports **Free** and **Premium** user roles |
+| **Access Control** | Premium endpoints are accessible only to authenticated Premium users |
+| **Password Security** | Passwords are encrypted using BCrypt before being stored |
+| **Session Management** | Stateless authentication with JWT, eliminating server-side sessions |
+| **API Design** | RESTful architecture with well-structured endpoints and HTTP status codes |
+| **Data Persistence** | Spring Data JPA with Hibernate ORM for database operations |
+| **Architecture** | Layered architecture (Controller → Service → Repository) for maintainability |
+| **Exception Handling** | Centralized global exception handling with consistent API responses |
+| **Deployment** | Publicly deployed backend allowing authenticated API access over the internet |
+| **Build Tool** | Maven-based dependency and project management |
+
+## Tech Stack
+
+### Backend
+
+| Technology | Purpose |
+|------------|---------|
+| **Java 21** | Core programming language |
+| **Spring Boot** | REST API development and application framework |
+| **Spring Security** | Authentication and authorization |
+| **JWT (JSON Web Tokens)** | Stateless user authentication |
+| **Spring Data JPA** | Database abstraction and persistence |
+| **Hibernate** | ORM framework for database interaction |
+
+### Database
+
+| Technology | Purpose |
+|------------|---------|
+| **PostgreSQL** | Relational database for storing users and application data |
+
+### Build & Dependency Management
+
+| Technology | Purpose |
+|------------|---------|
+| **Maven** | Dependency management and project build automation |
+
+### Development Tools
+
+| Tool | Purpose |
+|------|---------|
+| **IntelliJ IDEA** | Primary development environment |
+| **Postman** | API testing and endpoint validation |
+| **Git** | Version control |
+| **GitHub** | Source code hosting and collaboration |
+
+### Deployment
+
+| Platform | Purpose |
+|----------|---------|
+| **Railway** | Cloud deployment of the backend API |
+
+## System Architecture
+
+The application follows a **layered architecture**, separating responsibilities across different components to improve maintainability, scalability, and testability.
+
+```text
+                    Client (Postman / Frontend)
+                              │
+                              ▼
+                    Spring Security Filter
+                              │
+                     JWT Token Validation
+                              │
+                              ▼
+                         REST Controllers
+                              │
+                              ▼
+                        Service Layer
+                              │
+                              ▼
+                     Repository Layer (JPA)
+                              │
+                              ▼
+                         PostgreSQL Database
+```
+
+Each incoming request passes through Spring Security, where the JWT token is validated before access is granted to protected endpoints. Once authenticated and authorized, the request is processed through the Controller, Service, and Repository layers before interacting with the database.
+
+### Architecture Layers
+
+| Layer | Responsibility |
+|--------|----------------|
+| **Security Filter** | Intercepts incoming requests and validates JWT tokens before allowing access. |
+| **Controller** | Handles HTTP requests and returns appropriate API responses. |
+| **Service** | Contains business logic and coordinates application operations. |
+| **Repository** | Performs database operations using Spring Data JPA. |
+| **Database** | Stores user accounts, roles, and application data securely. |
+
+## Request Lifecycle
+
+1. The client sends an HTTP request to the API.
+2. Spring Security intercepts the request.
+3. The JWT token is extracted from the `Authorization` header.
+4. The token is validated for authenticity and expiration.
+5. The authenticated user's role is verified.
+6. If authorized, the request proceeds to the appropriate controller.
+7. The controller delegates processing to the service layer.
+8. The service interacts with the repository layer.
+9. The repository retrieves or persists data in PostgreSQL.
+10. A structured JSON response is returned to the client.
+
+## API Endpoints
+
+The API is organized into logical endpoint groups for authentication and resource access. Interactive documentation is available through Swagger UI, where you can explore every endpoint, view request/response schemas, and execute API calls directly from your browser.
+
+### Endpoint Categories
+
+| Category | Description | Access |
+|----------|-------------|--------|
+| **Authentication** | Register new users and authenticate existing users | Public |
+| **Free APIs** | Endpoints accessible to authenticated Free and Premium users | Authenticated |
+| **Premium APIs** | Endpoints restricted to Premium users only | Authenticated & Premium |
+
+> **Interactive API Documentation**
+>
+> Explore all available endpoints, request bodies, response schemas, and test the API directly using the Swagger UI.
+>
+> <p align="left"><a href="https://your-api-url.onrender.com/swagger-ui/index.html"><img src="https://img.shields.io/badge/Open%20Swagger%20UI-85EA2D?style=for-the-badge&logo=swagger&logoColor=black" alt="Swagger UI"></a></p>
+
+## Project Structure
+
+```text
+api-portal-backend/
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── com/armaan/apiportal/
+│   │   │       ├── auth/
+│   │   │       ├── config/
+│   │   │       ├── model/
+│   │   │       ├── portal/
+│   │   │       ├── repository/
+│   │   │       ├── security/
+│   │   │       └── ApiPortalApplication.java
+│   │   └── resources/
+│   │       ├── application.properties
+│   │       └── ...
+│   └── test/
+├── pom.xml
+├── Dockerfile
+├── docker-compose.yml
+├── README.md
+└── LICENSE
+```
+
+### Directory Overview
+
+| Directory | Purpose |
+|-----------|---------|
+| `config` | Application and security configuration classes |
+| `portal` | REST API endpoints that handle client requests on dashboard |
+| `auth` | REST API endpoints that handle User authentication |
+| `model` | JPA entity classes mapped to database tables |
+| `repository` | Spring Data JPA repositories for database operations |
+| `security` | JWT utilities, authentication filters, and security configuration 
+| `resources` | Configuration files and application properties |
+
+## Getting Started
+
+Follow the steps below to set up and run the project locally.
 
 ### Prerequisites
-Ensure you have the following installed on your machine:
-* [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-* Git
 
-### Deployment Steps
-1. **Clone the Repository:**
-   ```bash
-   git clone https://github.com/armaan941/api-portal-backend.git
-   cd api-portal-backend
-2. **Verify Application Properties Configuration:**
-   Ensure your local src/main/resources/application.properties file is configured to dynamically read environmental variables passed down by the Docker Compose engine:
-   ```bash
-   spring.datasource.url=${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/api_portal_db}
-   spring.datasource.username=${SPRING_DATASOURCE_USERNAME:root}
-   spring.datasource.password=${SPRING_DATASOURCE_PASSWORD:your_local_password}
-3. **Launch the Containerized Infrastructure:**
-   Run the following terminal command from the project root directory (where `docker-compose.yml` resides):
-   ```bash
-   docker compose up --build -d
-   ```
-   This command compiles your Spring Boot source code inside a multi-stage Maven builder image, fetches a stable MySQL 8 container instance, provisions an isolated virtual bridge network, maps database volumes,      and launches both services seamlessly in detached background mode.
-4. **Verify Container Health Status:**
-   ```bash
-   docker compose ps
-   ```
-   You should see two healthy containers actively executing:
-   * `api-portal-app` listening on host port `8000`
-   * `api-portal-db` routed safely to host port `3307` (configured to completely bypass local machine 3306 socket resource collisions)
+Make sure the following software is installed on your machine:
 
-5. **Tear Down / Stop Infrastructure:**
-   To gracefully shut down the runtime containers while maintaining your database records safely intact inside the virtual storage volume, run:
-   ```bash
-   docker compose down
+| Requirement | Version |
+|-------------|---------|
+| Java | 21 or later |
+| Maven | 3.9+ |
+| PostgreSQL | 15+ (or your version) |
+| Git | Latest |
 
----
-
-## 📝 Integrated API Testing Guide (Postman Verification)
-
-### Endpoints Map
-* **Registration:** `POST` `http://localhost:8000/api/v1/auth/register`
-* **Authentication:** `POST` `http://localhost:8000/api/v1/auth/login`
-* **Token Rotation:** `POST` `http://localhost:8000/api/v1/auth/refresh-token`
-* **Protected Free Resource:** `GET` `http://localhost:8000/api/v1/dashboard/free-data`
-* * **Protected Premium Resource:** `GET` `http://localhost:8000/api/v1/dashboard/premium-data`
-* * **Session Revocation:** `POST` `http://localhost:8000/api/v1/auth/logout`
-
-### Execution Verification Flow
-1. Fire up your Postman Client.
-2. Target the registration route with a raw JSON request body payload to generate a brand-new database profile entry.
-3. Submit a `POST` request to the `/login` endpoint. Copy the generated `accessToken` returned from the success payload response.
-4. Access the protected dashboard route, navigate to the Authorization Tab, set the type to Bearer Token, and paste your string key. Click Send to see a clean HTTP `200 OK` return.
-5. Testing the Rate Limiter Interceptor: Click the send button rapidly 11 times inside 60 seconds. On the 11th click, the Bucket4j rate-limiting handler interceptor will drop the request thread immediately, short-circuiting execution to return a structured JSON HTTP `429 Too Many Requests` error mapping payload block!
-
----
-
-### **Commit and Push to GitHub**
-To instantly push this completely comprehensive readme update to your profile, execute these final terminal steps:
+### Clone the Repository
 
 ```bash
-git add README.md
-git commit -m "Docs: Complete overhaul of README layout adding architecture breakdowns, run guides, and troubleshooting data"
-git push origin main
+git clone https://github.com/armaanmulani/api-portal-backend.git
+
+cd api-portal-backend
+```
+
+### Configure the Database
+
+Update your `application.properties` (or `application.yml`) with your PostgreSQL credentials.
+
+```properties
+spring.datasource.url=jdbc:postgresql://localhost:5432/api_portal
+spring.datasource.username=YOUR_USERNAME
+spring.datasource.password=YOUR_PASSWORD
+
+spring.jpa.hibernate.ddl-auto=update
+
+jwt.secret=YOUR_SECRET_KEY
+jwt.expiration=86400000
+```
+
+> **Note:** Never commit real credentials or JWT secrets to the repository. Use environment variables or external configuration for production deployments.
+
+### Build the Project
+
+```bash
+mvn clean install
+```
+
+### Run the Application
+
+```bash
+mvn spring-boot:run
+```
+
+Once the application starts successfully, it will be available at:
+
+```
+http://localhost:8080
+```
+
+You can then explore and test the API using the Swagger UI:
+
+```
+http://localhost:8080/swagger-ui/index.html
+```
+
+### Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| `DB_URL` | PostgreSQL connection URL |
+| `DB_USERNAME` | Database username |
+| `DB_PASSWORD` | Database password |
+| `JWT_SECRET` | Secret key used to sign JWT tokens |
+| `JWT_EXPIRATION` | JWT expiration time in milliseconds |
+
+## Screenshots
+
+### Swagger UI
+
+Interactive API documentation with all available endpoints.
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/9ec3494b-9384-4aac-9a6b-fdc2025817dc" width="900" alt="Swagger UI">
+</p>
+
+---
+
+### User Registration
+
+Register a new user account.
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/82d353a3-75eb-489a-a6b4-63ce26ef1e72" width="900" alt="Register Endpoint">
+</p>
+
+---
+
+### User Login
+
+Authenticate a user and receive a JWT access token.
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/c1c96059-0579-42a3-9ac7-c6e273c3f473" width="900" alt="Login Endpoint">
+</p>
+
+---
+
+### JWT Authorization
+
+Authorize requests by providing the JWT access token.
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/f4dced11-2f62-4762-9ff8-f3a1ba5ff1c9" width="900" alt="JWT Authorization">
+</p>
+
+---
+
+### Premium Endpoint Access
+
+Premium users can successfully access protected resources.
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/ecc7abb1-88bd-4096-a7af-facba6b297d0" width="900" alt="Premium Access">
+</p>
+
+---
+
+### Access Denied
+
+A Free user attempting to access a Premium endpoint receives a `403 Forbidden` response.
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/0778ff54-f3a4-49fa-baa3-1704ec54cf6c" width="900" alt="403 Forbidden">
+</p>
+
+## Roadmap
+
+The following enhancements are planned for future releases:
+
+- [ ] Refresh token support for improved session management
+- [ ] Email verification during user registration
+- [ ] Password reset via email
+- [ ] OAuth 2.0 authentication (Google/GitHub)
+- [ ] API rate limiting to prevent abuse
+- [ ] Docker containerization
+- [ ] CI/CD pipeline using GitHub Actions
+- [ ] Unit and integration testing
+- [ ] API versioning
+- [ ] Monitoring and logging with Prometheus & Grafana
+
+## Contributing
+
+Contributions, bug reports, and feature suggestions are welcome.
+
+If you'd like to contribute:
+
+1. Fork the repository.
+2. Create a new feature branch.
+3. Commit your changes with clear commit messages.
+4. Open a Pull Request describing your changes.
+
+Please ensure that your code follows the existing project structure and coding conventions.
+
+## License
+
+This project is licensed under the **MIT License**.
+
+See the [LICENSE](LICENSE) file for more information.
+
+## Author
+
+**Armaan Mulani**
+
+- GitHub: https://github.com/armaanmulani
+- LinkedIn: https://linkedin.com/in/armaanmulani
+
+If you found this project helpful, consider giving it a ⭐ on GitHub!
