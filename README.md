@@ -366,12 +366,12 @@ A Free user attempting to access a Premium endpoint receives a `403 Forbidden` r
 
 The following enhancements are planned for future releases:
 
-- [ ] Refresh token support for improved session management
+- [x] Refresh token support for improved session management
 - [ ] Email verification during user registration
 - [ ] Password reset via email
 - [ ] OAuth 2.0 authentication (Google/GitHub)
-- [ ] API rate limiting to prevent abuse
-- [ ] Docker containerization
+- [x] API rate limiting to prevent abuse
+- [x] Docker containerization
 - [ ] CI/CD pipeline using GitHub Actions
 - [ ] Unit and integration testing
 - [ ] API versioning
